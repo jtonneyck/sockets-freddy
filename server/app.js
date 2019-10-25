@@ -4,12 +4,12 @@ const server = require('http').createServer();
 const io = require('socket.io')(server);
 
 io.on("connection", client => {
-    
-    const pin =  Math.random().toString().substr(2,4)
-    client.join(pin)
-    
-    io.to(pin).emit("pin", {pin})
 
+    client.on("join-room", data=> {
+        debugger
+        client.join(data.pin)
+    })
+    
     client.on("signup", data=> {
         client.join(data.pin)
         io.to(data.pin).emit("player-joined", {username: data.username})
@@ -24,10 +24,14 @@ io.on("connection", client => {
 io.of("/questions").on("connection", client => {
     
     client.on("join-room", data => {
+        debugger
         client.join(data.pin)
     })
 
-
+    client.on("answer-question", data => {
+        debugger
+        io.of("/questions").to(data.pin).emit("question-answered", data);
+    })
 })
 
 server.listen(3000);
