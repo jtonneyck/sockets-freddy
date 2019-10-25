@@ -11,12 +11,22 @@ io.on("connection", client => {
     io.to(pin).emit("pin", {pin})
 
     client.on("signup", data=> {
+        client.join(data.pin)
         io.to(data.pin).emit("player-joined", {username: data.username})
     })
     
     client.on("start-game", (data)=>{
-        io.emit("game-started")
+        io.to(data.pin).emit("game-started")
     })
+
+})
+
+io.of("/questions").on("connection", client => {
+    
+    client.on("join-room", data => {
+        client.join(data.pin)
+    })
+
 
 })
 
